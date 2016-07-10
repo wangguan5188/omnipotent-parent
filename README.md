@@ -1,2 +1,2 @@
-# wangguan-parent
-项目初始化
+# omnipotent-parent
+项目初始化架构
