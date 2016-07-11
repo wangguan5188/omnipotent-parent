@@ -89,7 +89,7 @@
 		<quartz.version>1.8.6</quartz.version>
 		<redis.client.version>2.4.2</redis.client.version>
 		<servlet.version>3.1.0</servlet.version>
-		<spring.vervion>3.2.4.RELEASE</spring.vervion>
+		<spring.vervion>4.3.1.RELEASE</spring.vervion>
 	</properties>
 	
 	<!--  -->
@@ -229,18 +229,6 @@
 				<version>${dubbo.version}</version>
 			</dependency>
 			<!-- Dubbo end -->
-			<!-- JPOS start -->
-			<dependency>
-				<groupId>org.jpos</groupId>
-				<artifactId>jpos</artifactId>
-				<version>1.9.8</version>
-			</dependency>
-			<dependency>
-				<groupId>org.osgi</groupId>
-				<artifactId>org.osgi.core</artifactId>
-				<version>4.3.1</version>
-			</dependency>
-			<!-- JPOS end -->
 			<!-- Json start -->
 			<dependency>
 			    <groupId>com.alibaba</groupId>
@@ -476,7 +464,7 @@
 			<!-- Zookeeper end -->
 		</dependencies>
 	</dependencyManagement>
-
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -530,6 +518,7 @@
 	<modules>
 		<module>omnipotent-common-utils</module>
 		<module>omnipotent-common-config</module>
+		<module>omnipotent-web</module>
 	</modules>
 	
 </project>
