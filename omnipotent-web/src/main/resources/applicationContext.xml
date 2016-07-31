@@ -42,10 +42,9 @@
 	<!-- 引入属性文件 
 	<context:property-placeholder location="classpath:conf.properties" />
 	-->
-	<context:property-placeholder location="classpath:db.properties" />
 	
 	<!-- 引入DataSource配置 -->
-    <import resource="classpath:datasource.xml"/>
+    <import resource="classpath:spring-druid.xml"/>
     
     <!-- 将数据源映射到sqlSessionFactory中 -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">

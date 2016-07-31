@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:aop="http://www.springframework.org/schema/aop" 
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans    
+    http://www.springframework.org/schema/beans/spring-beans-4.0.xsd    
+    http://www.springframework.org/schema/jdbc 
+    http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd 
+    http://www.springframework.org/schema/tx    
+    http://www.springframework.org/schema/tx/spring-tx-4.0.xsd   
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop-4.0.xsd  
+    http://www.springframework.org/schema/context   
+    http://www.springframework.org/schema/context/spring-context-4.0.xsd 
+    http://www.springframework.org/schema/mvc   
+    http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd 
+    http://www.springframework.org/schema/task
+    http://www.springframework.org/schema/task/spring-task-4.0.xsd
+   	http://www.springframework.org/schema/rabbit 
+   	http://www.springframework.org/schema/rabbit/spring-rabbit-1.5.xsd">
+   	
+	<!-- 引入属性文件 -->
+	<context:property-placeholder location="classpath:db.properties" />
+		
+	<!-- 
+		打开监控统计功能，配置StatFilter。
+		StatFilter的别名是stat，这个别名映射配置信息保存在druid-xxx.jar!/META-INF/druid-filter.properties。
+	-->
+	<bean id="stat-filter" class="com.alibaba.druid.filter.stat.StatFilter">
+		<!--  
+			StatFilter属性slowSqlMillis用来配置SQL慢的标准，执行时间超过slowSqlMillis的就是慢。
+			slowSqlMillis的缺省值为3000，也就是3秒。
+			slowSqlMillis属性也可以通过connectProperties来配置，例如：
+			<property name="filters" value="stat" />
+    		<property name="connectionProperties" value="druid.stat.slowSqlMillis=5000" />
+		-->
+	    <property name="slowSqlMillis" value="10000" />
+	    <property name="logSlowSql" value="true" />
+	    <!-- 
+	    	SQL合并配置（还有其他三种配置方式） ：在druid-0.2.17版本之后，sql合并支持tddl，能够对分表进行合并。
+	    	<property name="filters" value="mergeStat" />
+	    	<property name="connectionProperties" value="druid.stat.mergeSql=true" />
+	    	或者通过增加JVM的参数配置:-Ddruid.stat.mergeSql=true
+	    -->
+	    <property name="mergeSql" value="true" />
+	</bean>
+	
+	<bean id="wall-filter-config" class="com.alibaba.druid.wall.WallConfig" init-method="init">
+      	<!-- 指定配置装载的目录  -->
+      	<property name="dir" value="META-INF/druid/wall/mysql" />
+  	</bean>
+	
+	<!-- 有时候，一些应用框架做了自己的JDBC Proxy Driver，是的DruidDataSource无法正确识别数据库的类型，则需要特别指定 -->
+  	<bean id="wall-filter" class="com.alibaba.druid.wall.WallFilter">
+      	<property name="dbType" value="mysql" />
+      	<property name="config" ref="wall-filter-config" />
+  	</bean>
+	
+	<!-- 配置数据源：基于Druid数据库链接池的数据源配置 -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<!-- 基本属性driverClassName、 url、user、password -->
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		
+		<!-- 配置初始化大小、最小、最大 -->
+		<!-- 通常来说，只需要修改initialSize、minIdle、maxActive -->
+		<!-- 初始化时建立物理连接的个数，缺省值为0 -->
+		<property name="initialSize" value="${jdbc.initialSize}" />
+		<!-- 最小连接池数量 -->
+		<property name="minIdle" value="${jdbc.minIdle}" />
+		<!-- 最大连接池数量，缺省值为8 -->
+		<property name="maxActive" value="${jdbc.maxActive}" />
+
+		<!-- 获取连接时最大等待时间，单位毫秒。配置了maxWait之后，缺省启用公平锁，并发效率会有所下降，如果需要可以通过配置useUnfairLock属性为true使用非公平锁。 -->
+		<property name="maxWait" value="60000" />
+		
+		<!-- 
+			有些数据库连接的时候有超时限制（MySQL连接在8小时后断开），或者由于网络中断等原因，连接池的连接会出现失效的情况，这时候可以设置一个testWhileIdle参数为true，
+			如果检测到当前连接不活跃的时间超过了timeBetweenEvictionRunsMillis，则去手动检测一下当前连接的有效性，在保证确实有效后才加以使用。
+			在检测活跃性时，如果当前的活跃时间大于minEvictableIdleTimeMillis，则认为需要关闭当前连接。当
+			然，为了保证绝对的可用性，你也可以使用testOnBorrow为true（即在每次获取Connection对象时都检测其可用性），不过这样会影响性能。
+		-->
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒（3600000:为1小时） -->
+		<property name="timeBetweenEvictionRunsMillis" value="3600000" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒(300000:为5分钟) -->
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<!-- 用来检测连接是否有效的sql，要求是一个查询语句。如果validationQuery为null，testOnBorrow、testOnReturn、testWhileIdle都不会起作用。 -->
+		<property name="validationQuery" value="SELECT 'x'" />
+		<!-- 申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效。建议配置为true，不影响性能，并且保证安全性。-->
+      	<property name="testWhileIdle" value="true" />
+      	<!-- 申请连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能。缺省值:true -->
+      	<property name="testOnBorrow" value="false" />
+      	<!-- 归还连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能。缺省值:false -->
+      	<property name="testOnReturn" value="false" />
+      	
+      	<!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+		<!-- 
+			是否缓存preparedStatement，也就是PSCache。PSCache对支持游标的数据库性能提升巨大，比如说oracle。
+			在mysql5.5以下的版本中没有PSCache功能，建议关闭掉。5.5及以上版本有PSCache，建议开启。缺省值:false 
+			分库分表较多的数据库，建议配置为false。
+		-->
+		<property name="poolPreparedStatements" value="true" />
+		<!-- 要启用PSCache，必须配置大于0，当大于0时，poolPreparedStatements自动触发修改为true。在Druid中，不会存在Oracle下PSCache占用内存过多的问题，可以把这个数值配置大一些，比如说100。 -->
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+		
+		<!-- 解密密码必须要配置的项 -->
+		<property name="filters" value="config" />
+		<!-- 
+			打开监控统计功能，配置StatFilter。 
+			其中filters和proxyFilters属性是组合关系的，不是替换的，在上面的配置中，dataSource有了两个Filter，StatFilter和Log4jFilter。
+		-->
+		<property name="proxyFilters">
+	        <list>
+	            <ref bean="stat-filter" />
+	            <ref bean="wall-filter" />
+	        </list>
+	    </property>
+		<property name="connectionProperties" value="config.decrypt=true" />
+		<!-- 
+		<property name="connectionProperties" value="config.decrypt=true;config.decrypt.key=${publickey}" />
+		配置文件从本地文件系统中读取： 
+		<property name="connectionProperties" value="config.file=file:///home/admin/druid-pool.properties" />
+		配置文件从远程http服务器中读取：
+		这种配置方式，使得一个应用集群中，多个实例可以从同一个地方读取配置，集中配置，集中修改，部署更简单。
+		<property name="connectionProperties" value="config.file=http://127.0.0.1/druid-pool.properties" />
+		-->
+		<!-- 
+			合并多个DruidDataSource的监控数据：缺省多个DruidDataSource的监控数据是各自独立的，
+			在Druid-0.2.17版本之后，支持配置公用监控数据，配置参数为useGloalDataSourceStat。例如：
+			<property name="useGlobalDataSourceStat" value="true" />
+			或者通过jvm启动参数来指定，例如：-Ddruid.useGlobalDataSourceStat=true
+		-->
+	</bean>
+	
+	<!-- com.alibaba.druid.support.spring.stat.DruidStatInterceptor是一个标准的Spring MethodInterceptor。可以灵活进行AOP配置。 -->
+	<bean id="druid-stat-interceptor" class="com.alibaba.druid.support.spring.stat.DruidStatInterceptor"></bean>
+	
+	<bean id="druid-stat-pointcut" class="org.springframework.aop.support.JdkRegexpMethodPointcut" scope="prototype">
+    	<property name="patterns">
+	        <list>
+	            <value>com.omnipotent.service.*</value>
+	            <value>com.omnipotent.dao.*</value>
+	        </list>
+	    </property>
+	</bean>
+	
+	<!--  
+	<aop:config proxy-target-class="true">
+	-->
+	<aop:config>
+	    <aop:advisor advice-ref="druid-stat-interceptor" pointcut-ref="druid-stat-pointcut" />
+	</aop:config>
+	
+	<!-- 配置Jdbc模板  
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	-->
+	
+</beans>

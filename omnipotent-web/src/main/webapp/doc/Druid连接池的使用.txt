@@ -1,0 +1,73 @@
+ Druid数据库连接池使用
+
+阿里巴巴推出的国产数据库连接池，据网上测试对比，比目前的DBCP或C3P0数据库连接池性能更好
+
+可以监控连接以及执行的SQL的情况。
+
+加入项目的具体步骤：
+
+1、导入jar
+
+<parent>
+    <groupId>com.alibaba</groupId>
+    <artifactId>parent-pom</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+</parent>
+
+2、在applicationContext-resources.xml 配置数据库连接池，以mysql数据库为例
+复制代码
+
+<!-- druid DataSource for J2EE environments -->
+<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="jdbc:mysql://127.0.0.1:3306/XXX" />
+        <property name="username" value="root" />
+        <property name="password" value="root" />
+
+        <property name="maxActive" value="20" />
+        <property name="initialSize" value="1" />
+        <property name="maxWait" value="60000" />
+        <property name="minIdle" value="1" />
+
+        <property name="timeBetweenEvictionRunsMillis" value="3000" />
+        <property name="minEvictableIdleTimeMillis" value="300000" />
+
+        <property name="validationQuery" value="SELECT 'x' FROM DUAL" />
+        <property name="testWhileIdle" value="true" />
+        <property name="testOnBorrow" value="false" />
+        <property name="testOnReturn" value="false" />
+        <!-- mysql 不支持 poolPreparedStatements-->
+        <!--<property name="poolPreparedStatements" value="true" />-->
+        <!--<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />-->
+
+        <!-- 开启Druid的监控统计功能 -->
+        <property name="filters" value="stat" />
+
+</bean>
+
+复制代码
+
+3、配置内置监控
+复制代码
+
+<servlet>
+    <servlet-name>DruidStatView</servlet-name>
+    <servlet-class>com.alibaba.druid.support.http.StatViewServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>DruidStatView</servlet-name>
+    <url-pattern>/druid/*</url-pattern>
+</servlet-mapping>
+
+复制代码
+
+4、通过访问druid/index.html 可以查看项目的运行情况，也可以分析SQL语句的执行情况，便于调优。
+
+ 
+
+项目地址：https://github.com/alibaba/druid
+
+目前最新版本为1.0.11
+
+ 
+
+百度发现该连接池存在一些问题，开发测试环境可以使用，正式环境还是用成熟点的比较靠谱

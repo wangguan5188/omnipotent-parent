@@ -20,6 +20,11 @@
 	</listener>
 	-->
 	
+	<!-- 防止发生java.beans.Introspector内存泄露,应将它配置在ContextLoaderListener的前面 -->
+    <!-- 详细描述见http://blog.csdn.net/jadyer/article/details/11991457 -->
+    <listener>
+        <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
 	<!-- 配置启动Spring IOC容器的Listener -->
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
@@ -77,6 +82,95 @@
 		<servlet-name>dispatcher</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
+	
+	<!-- Druid,监控数据库,以及WEB访问连接信息 -->
+	<!-- 参考: https://github.com/alibaba/druid/wiki/%E9%85%8D%E7%BD%AE_%E9%85%8D%E7%BD%AEWebStatFilter -->
+	<filter>
+		<filter-name>DruidWebStatFilter</filter-name>
+		<filter-class>com.alibaba.druid.support.http.WebStatFilter</filter-class>
+		<init-param>
+			<param-name>exclusions</param-name>
+			<param-value>*.js,*.gif,*.jpg,*.png,*.css,*.ico,*.jsp,/druid/*,/download/*</param-value>
+		</init-param>
+		<init-param>
+			<param-name>sessionStatMaxCount</param-name>
+			<param-value>2000</param-value>
+		</init-param>
+		<init-param>
+	        <param-name>sessionStatEnable</param-name>
+	        <param-value>true</param-value>
+	    </init-param>
+		<init-param>
+	        <param-name>principalSessionName</param-name>
+	        <param-value>session_user_key</param-value>
+	    </init-param>
+	    <init-param>
+		    <param-name>profileEnable</param-name>
+		    <param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>DruidWebStatFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<!--  
+		StatViewServlet配置：
+		Druid内置提供了一个StatViewServlet用于展示Druid的统计信息。
+		这个StatViewServlet的用途包括：
+		    提供监控信息展示的html页面
+		    提供监控信息的JSON API
+		注意：使用StatViewServlet，建议使用druid 0.2.6以上版本。
+		StatViewServlet是一个标准的javax.servlet.http.HttpServlet，需要配置在你web应用中的WEB-INF/web.xml中。
+		根据配置中的url-pattern来访问内置监控页面，如果是上面的配置，内置监控页面的首页是/druid/index.html
+	-->
+	<servlet>
+    	<servlet-name>DruidStatView</servlet-name>
+      	<servlet-class>com.alibaba.druid.support.http.StatViewServlet</servlet-class>
+      	<init-param>  
+		    <!-- 允许清空统计数据 -->  
+		    <param-name>resetEnable</param-name>  
+		    <param-value>true</param-value>  
+		</init-param>
+		<init-param>
+		    <!-- 用户名 -->  
+		    <param-name>loginUsername</param-name>  
+		    <param-value>druid</param-value>  
+		</init-param>
+		<init-param>
+		    <!-- 密码 -->  
+		    <param-name>loginPassword</param-name>  
+		    <param-value>druid</param-value>  
+	    </init-param>
+	    <!-- 
+	    	配置allow和deny，判断规则：
+    			deny优先于allow，如果在deny列表中，就算在allow列表中，也会被拒绝。
+    			如果allow没有配置或者为空，则允许所有访问
+    		ip配置规则：
+    			配置的格式    <IP>  或者  <IP>/<SUB_NET_MASK_size>  
+    			其中  128.242.127.1/24  24表示，前面24位是子网掩码，比对的时候，前面24位相同就匹配。
+    			由于匹配规则不支持IPV6，配置了allow或者deny之后，会导致IPV6无法访问。
+	    <init-param>
+	        <param-name>allow</param-name>
+	        <param-value>128.242.127.1/24,128.242.128.1</param-value>
+	    </init-param>
+	    <init-param>
+	        <param-name>deny</param-name>
+	        <param-value>128.242.127.4</param-value>
+	    </init-param>
+	    -->
+	    <!--  
+	    	配置resetEnable：在StatViewSerlvet输出的html页面中，有一个功能是Reset All，执行这个操作之后，会导致所有计数器清零，重新计数。你可以通过配置参数关闭它。
+	    <init-param>
+	        <param-name>resetEnable</param-name>
+	        <param-value>false</param-value>
+	    </init-param>
+	    -->
+  	</servlet>
+  	<servlet-mapping>
+      	<servlet-name>DruidStatView</servlet-name>
+      	<url-pattern>/druid/*</url-pattern>
+  	</servlet-mapping>
 	
 	<!-- 默认欢迎页面设置 -->
 	<welcome-file-list>
