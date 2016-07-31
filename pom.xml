@@ -3,20 +3,41 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	
 	<!-- maven2.0必须是这样写，现在是maven2唯一支持的版本 -->
+	<!-- 
+		声明项目描述符遵循哪一个POM模型版本。模型本身的版本很少改变，虽然如此，但它仍然是必不可少的，
+		这是为了当Maven引入了新的特性或者其他模型变更的时候，确保稳定性。
+	-->
 	<modelVersion>4.0.0</modelVersion>
 	
 	<!-- 指定组名,例如：org.apache.maven -->
+	<!-- 
+		项目的全球唯一标识符，通常使用全限定的包名区分该项目和其他项目。并且构建时生成的路径也是由此生成，
+		如com.mycompany.app生成的相对路径为：/com/mycompany/app 
+	-->
 	<groupId>com.omnipotent</groupId>
     <!-- 指定工程名例如：appfuse -->
+    <!-- 
+    	构件的标识符，它和group ID一起唯一标识一个构件。换句话说，你不能有两个不同的项目拥有同样的artifact ID和groupID；
+    	在某个特定的group ID下，artifact ID也必须是唯一的。
+    	构件是项目产生的或使用的一个东西，Maven为项目产生的构件包括：JARs，源 码，二进制发布和WARs等。 
+    -->
 	<artifactId>omnipotent-parent</artifactId>
     <!-- 指定版本号 格式为:主版本.次版本.增量版本-限定版本号 -->
 	<version>0.0.1-SNAPSHOT</version>
     <!-- 项目产生的构件类型，例如jar、war、ear、pom。插件可以创建他们自己的构件类型，所以前面列的不是全部构件类型 -->
 	<packaging>pom</packaging>
 	
+	<!-- 项目的名称, Maven产生的文档用 -->
 	<!-- <name>${project.artifactId}</name> -->
 	<name>omnipotent-parent</name>
+	<!-- 
+		项目的详细描述, Maven 产生的文档用。当这个元素能够用HTML格式描述时（例如，CDATA中的文本会被解析器忽略，就可以包含HTML标 签），
+		不鼓励使用纯文本描述。如果你需要修改产生的web站点的索引页面，你应该修改你自己的索引页文件，而不是调整这里的文档。 
+	-->
 	<!-- <description>${project.artifactId}</description> -->
+	<!-- 项目主页的URL, Maven产生的文档用 
+    <url>http://www.baidu.com/banseon</url>
+	-->     
 	
 	<!-- 全局属性配置 -->
 	<profiles>
@@ -44,21 +65,34 @@
 		</profile>
 	</profiles>
 	
-	<!--  
+	<!-- 
+		项目分发信息，在执行mvn deploy后表示要发布的位置。有了这些信息就可以把网站部署到远程服务器或者把构件部署到远程仓库。 
 	<distributionManagement>
+     	<repository>
+        	<id>ziroom</id>
+        	<url>http://mvn.ziroom.com/ams-release</url>
+     	</repository>-->
+     	<!--  
 		<repository>
 			<id>nexus-releases</id>
 			<name>Nexus Release Repository</name>
 			<url>http://112.126.64.113:6081/nexus/content/repositories/releases/</url>
 		</repository>
+	    <snapshotRepository>
+	    	<id>ziroom</id>
+	        <url>http://mvn.ziroom.com/ams-snapshot</url>
+		</snapshotRepository>
+     	-->
+		<!--  
 		<snapshotRepository>
 			<id>nexus-snapshots</id>
 			<name>Nexus Snapshot Repository</name>
 			<url>http://112.126.64.113:6081/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
-	-->
+		-->
 	
+	<!-- 集中定义版本号 -->
 	<properties>
 		<encoding>UTF-8</encoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -89,11 +123,19 @@
 		<quartz.version>1.8.6</quartz.version>
 		<redis.client.version>2.4.2</redis.client.version>
 		<servlet.version>3.1.0</servlet.version>
-		<spring.vervion>4.3.1.RELEASE</spring.vervion>
+		<spring.vervion>4.2.1.RELEASE</spring.vervion>
 	</properties>
 	
-	<!--  -->
+	<!-- 
+	Maven 使用dependencyManagement 元素来提供了一种管理依赖版本号的方式。通常会在一个组织或者项目的最顶层的父POM中看到dependencyManagement元素。
+	使用pom.xml中的dependencyManagement元素能让所有在子项目中引用一个依赖而不用显式的列出版本号。
+	Maven会沿着父子层次向上走，直到找到一个拥有dependencyManagement 元素的项目，然后它就会使用在这个dependencyManagement元素中指定的版本号。 
+	这样做的好处就是：如果有多个子项目都引用同一样依赖，则可以避免在每个使用的子项目里都声明一个版本号，这样当想升级或切换到另一个版本时，
+	只需要在顶层父容器里更新，而不需要一个一个子项目的修改 ；另外如果某个子项目需要另外的一个版本，只需要声明version就可。
+	dependencyManagement里只是声明依赖，并不实现引入，因此子项目需要显式的声明需要用的依赖。
+	-->
 	<dependencyManagement>
+		<!-- 相对于dependencyManagement，所有声明在dependencies里的依赖都会自动引入，并默认被所有的子项目继承。 -->
 		<dependencies>
 			<!-- activemq start -->
 			<dependency>
@@ -239,8 +281,36 @@
 				<groupId>net.sf.json-lib</groupId>
 				<artifactId>json-lib</artifactId>
 				<version>${json.version}</version>
+				<!--  
+					如果你要发布同样的代码，但是由于技术原因需要生成两个单独的构件，你就要使用一个分类器（classifier）。
+					例如，如果你想要构建两个单独的构件成JAR，一个使用Java 1.4 编译器，另一个使用Java 6 编译器，
+					你就可以使用分类器来生成两个单独的JAR构件，它们有同样的groupId:artifactId:version组合。
+					如果你的项目使用本地扩展类库，你可以使用分类器为每一个目标平台生成一个构件。
+					分类器常用于打包构件的源码，JavaDoc 或者二进制集合。
+				-->
 				<classifier>jdk15</classifier>
+				<!--  
+					依赖范围。在项目发布过程中，帮助决定哪些构件被包括进来。欲知详情请参考依赖机制。    
+	                - compile ：默认范围，用于编译      
+	                - provided：类似于编译，但支持你期待jdk或者容器提供，类似于classpath      
+	                - runtime: 在执行时需要使用      
+	                - test:    用于test任务时使用      
+	                - system: 需要外在提供相应的元素。通过systemPath来取得      
+	                - systemPath: 仅用于范围为system。提供相应的路径      
+	                - optional:   当项目自身被依赖时，标注依赖是否传递。用于连续依赖时使用
+				-->
 				<scope>compile</scope>
+				<!-- 
+					仅供system范围使用。注意，不鼓励使用这个元素，并且在新的版本中该元素可能被覆盖掉。
+					该元素为依赖规定了文件系统上的路径。需要绝对路径而不是相对路径。
+					推荐使用属性匹配绝对路径，例如${java.home}。 
+            	<systemPath></systemPath>
+				-->
+				<!-- 
+					可选依赖，如果你在项目B中把C依赖声明为可选，你就需要在依赖于B的项目（例如项目A）中显式的引用对C的依赖。
+					可选依赖阻断依赖的传递性。
+            	<optional>true</optional>
+				-->  
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.jackson</groupId>
@@ -354,100 +424,115 @@
 			<!-- solr-client end -->
 			<!-- Spring框架相关 start -->
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-aop</artifactId>
-				<version>${spring.vervion}</version>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-aop</artifactId>
+			    <version>${spring.vervion}</version>
+			</dependency>
+		  	<dependency>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-aspects</artifactId>
+			    <version>${spring.vervion}</version>
+			</dependency>
+		  	<dependency>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-beans</artifactId>
+			    <version>${spring.vervion}</version>
+			</dependency>
+		  	<dependency>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-context</artifactId>
+			    <version>${spring.vervion}</version>
+			    <!-- 
+			    	当计算传递依赖时， 从依赖构件列表里，列出被排除的依赖构件集。
+			    	即告诉maven你只依赖指定的项目，不依赖项目的依赖。此元素主要用于解决版本冲突问题 
+			    -->
+			    <exclusions>
+			    	<!-- Exclude Commons Logging in favor of SLF4j -->  
+		             <exclusion>  
+		                 <groupId>commons-logging</groupId>  
+		                 <artifactId>commons-logging</artifactId>  
+		              </exclusion> 
+			    </exclusions>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-aspects</artifactId>
-				<version>${spring.vervion}</version>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-context-support</artifactId>
+			    <version>${spring.vervion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-beans</artifactId>
-				<version>${spring.vervion}</version>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-core</artifactId>
+			    <version>${spring.vervion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-context</artifactId>
-				<version>${spring.vervion}</version>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-expression</artifactId>
+			    <version>${spring.vervion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-context-support</artifactId>
-				<version>${spring.vervion}</version>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-instrument</artifactId>
+			    <version>${spring.vervion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-core</artifactId>
-				<version>${spring.vervion}</version>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-instrument-tomcat</artifactId>
+			    <version>${spring.vervion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-expression</artifactId>
-				<version>${spring.vervion}</version>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-jdbc</artifactId>
+			    <version>${spring.vervion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-instrument</artifactId>
-				<version>${spring.vervion}</version>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-jms</artifactId>
+			    <version>${spring.vervion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-instrument-tomcat</artifactId>
-				<version>${spring.vervion}</version>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-messaging</artifactId>
+			    <version>${spring.vervion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-jdbc</artifactId>
-				<version>${spring.vervion}</version>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-orm</artifactId>
+			    <version>${spring.vervion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-jms</artifactId>
-				<version>${spring.vervion}</version>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-oxm</artifactId>
+			    <version>${spring.vervion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-orm</artifactId>
-				<version>${spring.vervion}</version>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-test</artifactId>
+			    <version>${spring.vervion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-oxm</artifactId>
-				<version>${spring.vervion}</version>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-tx</artifactId>
+			    <version>${spring.vervion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-struts</artifactId>
-				<version>${spring.vervion}</version>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-web</artifactId>
+			    <version>${spring.vervion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-test</artifactId>
-				<version>${spring.vervion}</version>
-				<scope>test</scope>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-webmvc</artifactId>
+			    <version>${spring.vervion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-tx</artifactId>
-				<version>${spring.vervion}</version>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-webmvc-portlet</artifactId>
+			    <version>${spring.vervion}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-web</artifactId>
-				<version>${spring.vervion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-webmvc</artifactId>
-				<version>${spring.vervion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-webmvc-portlet</artifactId>
-				<version>${spring.vervion}</version>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-websocket</artifactId>
+			    <version>${spring.vervion}</version>
 			</dependency>
 			<!-- Spring框架相关 end -->
 			<!-- Zookeeper start -->
@@ -514,7 +599,8 @@
 			</plugin>
 		</plugins>
 	</build>
-
+	
+	<!-- 子模块 -->
 	<modules>
 		<module>omnipotent-common-utils</module>
 		<module>omnipotent-common-config</module>

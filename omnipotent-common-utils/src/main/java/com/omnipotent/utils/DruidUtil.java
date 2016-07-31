@@ -1,15 +1,15 @@
-/**package com.omnipotent.utils;
+package com.omnipotent.utils;
 
 import com.alibaba.druid.filter.config.ConfigTools;
 import com.alibaba.druid.pool.DruidDataSource;
 
-
+/**
  * Druid实现数据库连接用户密码加密
  * 
  * @author zhangtb
  * @date 2016-7-11 20:25:12
  * @since 1.0.0
-
+ */
 public class DruidUtil extends DruidDataSource {
 
 	private static final long serialVersionUID = -1385151091182035930L;
@@ -34,7 +34,7 @@ public class DruidUtil extends DruidDataSource {
 			// Biyu5YzU+6sxDRbmWEa3B2uUcImzDo0BuXjTlL505+/pTb+/0Oqd3ou1R6J8+9Fy3CYrM18nBDqf6wAaPgUGOg==
 			System.out.println(encrypt);
 			
-			String username = "Biyu5YzU+6sxDRbmWEa3B2uUcImzDo0BuXjTlL505+/pTb+/0Oqd3ou1R6J8+9Fy3CYrM18nBDqf6wAaPgUGOg==";
+			String username = "ZDCKZBoQ0RXQHS1ighcK+QjT/FGcqk4lgh5L4eMmy809VZyMAw0XjxlVmoVV1vReFRrbgNuEyWZ7buTScaWopA==";
 			new DruidUtil().setUsername(username);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -42,4 +42,3 @@ public class DruidUtil extends DruidDataSource {
 	}
 
 }
- */

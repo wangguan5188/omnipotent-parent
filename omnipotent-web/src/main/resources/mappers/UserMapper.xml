@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.omnipotent.dao.UserDao">
+	
+	<!-- 根据用户名和密码查询用户信息 -->
+	<select id="queryUser" parameterType="map" resultType="com.omnipotent.model.User">
+		select * from pri_user 
+		where is_del = 0  
+		<if test="username != null and username != ''">
+			and username = #{username} 
+		</if>
+		<if test="password != null and password != ''">
+			and password = #{password} 
+		</if>
+	</select>
+	
+</mapper>
