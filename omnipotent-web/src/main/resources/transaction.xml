@@ -10,8 +10,14 @@
     http://www.springframework.org/schema/aop
     http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">         
 
-	<!-- 配置事务管理器 -->
+	<!-- 
+		配置事务管理器：声明式事务管理,采用AOP形式切入。
+		声明事务控制的方面组件，该组件Spring预置了
+		jdbc：org.springframework.jdbc.datasource.DataSourceTransactionManager
+		hibernate：org.springframework.orm.hibernate3.HibernateTransactionManager
+	-->
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<!-- 如果使用JDBC需要注入dataSource；如果使用Hibernate框架需要注入sessionFactory。 -->
  		<property name="dataSource" ref="dataSource"></property>
  	</bean>
 	
@@ -26,22 +32,26 @@
 	-->
 	 
 	<!-- 启用事务 -->
+	<!--
+		通常情况下，DML方法用propagation="REQUIRED"，表示开启事务。
+		查询方法用read-only="true"，表示不支持事务，效率更高。
+	-->
 	<tx:advice id="txAdvice" transaction-manager="transactionManager" >
 		<tx:attributes>
-			<tx:method name="add*" propagation="REQUIRED" />
-			<tx:method name="save*" propagation="REQUIRED" />
-			<tx:method name="insert*" propagation="REQUIRED"/>
-			<tx:method name="del*" propagation="REQUIRED" />
-			<tx:method name="delete*" propagation="REQUIRED" />
-			<tx:method name="update*" propagation="REQUIRED" />
-			<tx:method name="modify*" propagation="REQUIRED" />
-			<tx:method name="edit*" propagation="REQUIRED" />
-			<tx:method name="get*" propagation="SUPPORTS" />
-			<tx:method name="find*" propagation="SUPPORTS" />
-			<tx:method name="load*" propagation="SUPPORTS" />
-			<tx:method name="query*" propagation="SUPPORTS" />
-			<tx:method name="search*" propagation="SUPPORTS" />
-			<tx:method name="*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+			<tx:method name="add*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="save*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="insert*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="del*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="delete*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="update*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="modify*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="edit*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="get*" read-only="true" propagation="SUPPORTS" />
+			<tx:method name="find*" read-only="true" propagation="SUPPORTS" />
+			<tx:method name="load*" read-only="true" propagation="SUPPORTS" />
+			<tx:method name="query*" read-only="true" propagation="SUPPORTS" />
+			<tx:method name="search*" read-only="true" propagation="SUPPORTS" />
+			<tx:method name="*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
 		</tx:attributes>
 	</tx:advice>
 
@@ -52,21 +62,31 @@
 		 如果proxy-target-class属值被设置为false或者这个属性被省略，那么标准的JDK 基于接口的代理将起作用。 
 	-->
 	<aop:config proxy-target-class="true">
+		<!-- 
+			切入点表达式：
+			1）匹配类的表达式
+				用于指定哪些类的方法启用方面组件，语法格式within(类型)
+				-匹配AddCostAction类中的所有方法  within(com.tarena.action.AddCostAction)
+				-匹配com.tarena.action包下所有类的所有方法  within(com.tarena.action.*)
+				-匹配com.tarena包及其子包下所有类的所有方法  within(com.tarena..*)
+			2）匹配方法的表达式
+				用于指定哪些类的哪些方法引用方面组件，语法格式execution(修饰符? 返回类型 方法名(参数列表) throws异常?)
+				-匹配所有类中的delete方法  execution(* delete(..))
+				-匹配JdbcCostDao中的delete方法  execution(* com.tarena.dao.JdbcCostDao.delete(..))
+				-匹配JdbcCostDao中所有的方法  execution(* com.tarena.dao.JdbcCostDao.*(..))
+				-匹配com.tarena.dao包下所有类的所有方法
+					execution(* com.tarena.dao.*.*(..))
+				-匹配com.tarena包及其子包下所有类的所有方法
+				execution(* com.tarena..*.*(..))
+			3）匹配bean的表达式
+				用于指定哪个bean启用方面组件，语法格式bean(id)
+				-匹配id="costDao"的bean的所有方法  bean(costDao)
+				-匹配所有后缀为Dao的bean的所有方法  bean(*Dao)
+			4）匹配参数的表达式
+				用于指定具有哪种参数的方法启用方面组件，语法格式args(参数)
+				-匹配参数为String的所有方法  args(java.lang.String)
+		-->
 		<aop:advisor pointcut="execution(* com.omnipotent.service.*.*(..))" advice-ref="txAdvice" />
 	</aop:config>
 	
-	<!-- 配置druid监控spring jdbc 
-	<bean id="druid-stat-interceptor" class="com.alibaba.druid.support.spring.stat.DruidStatInterceptor"></bean>
-	<bean id="druid-stat-pointcut" class="org.springframework.aop.support.JdkRegexpMethodPointcut" scope="prototype">
-		<property name="patterns">
-			<list>
-				<value>com.omnipotent.service.impl</value>
-			</list>
-		</property>
-	</bean>
-	<aop:config>
-		<aop:advisor advice-ref="druid-stat-interceptor" pointcut-ref="druid-stat-pointcut" />
-	</aop:config>
-	-->
-
 </beans>

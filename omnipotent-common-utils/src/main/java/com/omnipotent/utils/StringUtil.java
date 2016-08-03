@@ -103,6 +103,19 @@ public class StringUtil {
 		System.out.println("I love WangGuan forever.");
 		System.out.println("I love WangGuan forever.");
 		System.out.println("I love WangGuan forever.");
+		
+		System.out.println("--------------------------------------------------");
+		System.out.println("aaa" == "aaa");// true
+		System.out.println("aaa".equals("aaa"));// true
+		System.out.println("--------------------------------------------------");
+		System.out.println("aaa" == "aAa");// false
+		System.out.println("aaa".equals("aAa"));// false
+		System.out.println("--------------------------------------------------");
+		System.out.println("aaa".toUpperCase());// AAA
+		System.out.println("AAA" == "aaa".toUpperCase());// false
+		System.out.println("AAA".equals("aaa".toUpperCase()));// true
+		System.out.println("--------------------------------------------------");
+		System.out.println("AAA".toLowerCase());
 	}
 
 }

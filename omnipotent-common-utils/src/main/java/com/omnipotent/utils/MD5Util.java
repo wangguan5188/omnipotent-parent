@@ -22,10 +22,9 @@ public class MD5Util {
 	private static MessageDigest messagedigest = null;
 	
 	/**
-	 * static详解：
+	 * static详解：（待完善）
 	 */
 	static {
-		// 静态代码块
 		try {
 			messagedigest = MessageDigest.getInstance("MD5");
 		} catch (NoSuchAlgorithmException nsaex) {
@@ -44,12 +43,14 @@ public class MD5Util {
 	 * MD5Util.encode("123456")   = "e10adc3949ba59abbe56e057f20f883e";
 	 * MD5Util.encode(" 123456 ") = "e10adc3949ba59abbe56e057f20f883e";
 	 * </pre>
-	 * @param text 要进行加密的文本字符串
+	 * @param text 要进行加密的文本字符串（原串）
 	 * @return 加密后的字符串
 	 */
 	public static String encode(String text) {
-		if(text != null) text = text.trim();
-		if(text==null || "".equals(text)) return "";
+		if(text==null || "".equals(text)) {
+			return "";
+		}
+		text = text.trim();
 		try {
 			MessageDigest digest = MessageDigest.getInstance("md5");
 			byte[] result = digest.digest(text.getBytes());
@@ -73,7 +74,7 @@ public class MD5Util {
 	/**
 	 * <p>加盐版的MD5，返回格式为MD5(密码+{盐值})</p>
 	 * 
-	 * @param password 要加密的文本字符串
+	 * @param password 要加密的文本字符串（原串）
 	 * @param salt 盐值
 	 * @return 加密后的字符串
 	 */
@@ -109,8 +110,8 @@ public class MD5Util {
 	/**
 	 * <p>得到一个字符串的MD5值</p>
 	 * 
-	 * @param str 字符串
-	 * @return
+	 * @param str 字符串（原串）
+	 * @return MD5值
 	 */
 	public static String getMD5String(String str) {
 		return getMD5String(str.getBytes());

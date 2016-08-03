@@ -7,16 +7,16 @@
     http://www.springframework.org/schema/task
     http://www.springframework.org/schema/task/spring-task-4.0.xsd">
 	
-	<!-- 房源数据增量更新（配置方式实现） 
-	<bean id="testTask" name="testTask" class="com.omnipotent.task.TestTask"/>
+	<!-- 测试任务（配置方式实现） 
+	<bean id="testTask" name="testTask" class="com.omnipotent.task.TestTask" />
 	<task:scheduled-tasks>
-	    <task:scheduled ref="testTask" method="execute" cron="0 0/1 * * * ?"/>
+	    <task:scheduled ref="testTask" method="execute" cron="0 0/1 * * * ?" />
 	</task:scheduled-tasks>
 	-->
 	
-	<!-- 房源数据全量更新（注解方式实现） -->
+	<!-- 测试任务（注解方式实现） -->
 	<task:scheduled-tasks>
-	    <task:scheduled ref="testTask" method="execute" cron="0 0/1 * * * ?"/>
+	    <task:scheduled ref="testTask" method="execute" cron="0 0/1 * * * ?" />
 	</task:scheduled-tasks>
 	
 </beans>

@@ -19,11 +19,11 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class PermissionFilter implements Filter {
 
-	//@SuppressWarnings("unused")
-	//private String filterURL;
+	@SuppressWarnings("unused")
+	private String filterURL;
 	
 	public void init(FilterConfig filterConfig) throws ServletException {
-		//filterURL = filterConfig.getInitParameter("filterURL");
+		filterURL = filterConfig.getInitParameter("filterURL");
 		System.out.println("PermissionFilter init...");
 	}
 	
@@ -31,7 +31,11 @@ public class PermissionFilter implements Filter {
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) resp;
 		String requestURI = request.getRequestURI();
-		System.out.println("Request URI: " + requestURI);
+		
+		System.out.println("--------------------------------------------------");
+		System.out.println("Request URI : " + requestURI);
+		System.out.println("--------------------------------------------------");
+		
 		chain.doFilter(request, response);
 	}
 	

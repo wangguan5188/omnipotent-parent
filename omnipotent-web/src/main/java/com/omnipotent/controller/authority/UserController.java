@@ -19,6 +19,7 @@ import com.omnipotent.utils.StringUtil;
 
 /**
  * @author zhangtb
+ * @date 2016-8-3 20:10:34
  * @since 1.0.0
  */
 @Controller
@@ -29,18 +30,24 @@ public class UserController {
 	private UserService UserService;
 	
 	/**
-	 * @param request
-	 * @param modelMap
+	 * 跳转到用户登录页面
+	 * 
+	 * @author zhangtb
+	 * @date 2016-8-3 20:10:56
 	 * @return
 	 */
 	@RequestMapping(value = "/toLogin")
-	public ModelAndView toLogin(HttpServletRequest request, ModelMap modelMap) {
+	public String toLogin() {
 		//TODO 初始化超级管理员账号
 		
-		return new ModelAndView("user/login", modelMap);
+		return "user/login";
 	}
 	
 	/**
+	 * 用户登录操作
+	 * 
+	 * @author zhangtb
+	 * @date 2016-8-3 20:11:39
 	 * @param request
 	 * @param modelMap
 	 * @return
@@ -51,8 +58,8 @@ public class UserController {
 		String username = StringUtil.toString(request.getParameter("username"), null);
 		String password = StringUtil.toString(request.getParameter("password"), null);
 		if(StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-			User user = UserService.queryUser(username, password);
-			if(user != null) {
+			User user = UserService.queryUser(username);
+			if(user != null && MD5Util.encode(password).equals(user.getPassword())) {
 				// 绑定到session
 				SessionUtil.set(request, GlobalConstant.WEB_USER, user, 5*60);
 				return new ModelAndView("redirect:/index", modelMap);

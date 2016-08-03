@@ -33,6 +33,16 @@
 		    <artifactId>druid</artifactId>
 		</dependency>
 		<!-- druid数据库连接池 end -->
+		<!-- apache-httpclient start -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</dependency>
+		<!-- apache-httpclient end -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
   	</dependencies>
   	
 	<build>
