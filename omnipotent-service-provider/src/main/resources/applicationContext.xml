@@ -22,11 +22,12 @@
     http://www.springframework.org/schema/mvc   
     http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd 
     http://www.springframework.org/schema/task
-    http://www.springframework.org/schema/task/spring-task-4.0.xsd 
-        http://code.alibabatech.com/schema/dubbo  
-        http://code.alibabatech.com/schema/dubbo/dubbo.xsd 
+    http://www.springframework.org/schema/task/spring-task-4.0.xsd
+    http://code.alibabatech.com/schema/dubbo  
+    http://code.alibabatech.com/schema/dubbo/dubbo.xsd 
    	http://www.springframework.org/schema/rabbit 
-   	http://www.springframework.org/schema/rabbit/spring-rabbit-1.5.xsd">
+   	http://www.springframework.org/schema/rabbit/spring-rabbit-1.5.xsd"
+   	default-autowire="byName" default-lazy-init="false">
     
     <!-- 
 		我们使用注解一般都会配置扫描包路径选项：
@@ -36,18 +37,20 @@
     <context:annotation-config />
     <context:spring-configured />
 	-->
+	
+	<!-- 采用注释的方式配置bean -->
+	<context:annotation-config />
     
     <!-- 开启注解自动扫描 -->
  	<context:component-scan base-package="com.omnipotent">
 	  	<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
 	
-	<!-- 引入属性文件 
-	<context:property-placeholder location="classpath:conf.properties" />
-	-->
-	
 	<!-- 引入属性文件 -->
-	<context:property-placeholder location="classpath:db.properties" />
+	<context:property-placeholder location="classpath*:db.properties" />
+	
+	<!-- proxy-target-class默认"false",更改为"ture"使用CGLib动态代理 -->
+	<aop:aspectj-autoproxy proxy-target-class="true" />
 	
 	<!-- 引入DataSource配置 -->
     <import resource="classpath:spring-druid.xml"/>
@@ -58,7 +61,7 @@
  	<!-- 引入Transaction配置 -->
   	<import resource="classpath:transaction.xml" />
   	
-  	<!-- 数据轮询文件 -->
-	<import resource="task-config.xml" />
-    
+ 	<!-- 引入dubbo配置 -->
+  	<import resource="classpath:dubbo-provider.xml" />
+  	
 </beans>

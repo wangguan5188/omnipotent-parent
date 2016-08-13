@@ -68,29 +68,18 @@
 	<!-- 
 		项目分发信息，在执行mvn deploy后表示要发布的位置。有了这些信息就可以把网站部署到远程服务器或者把构件部署到远程仓库。 
 	<distributionManagement>
-     	<repository>
-        	<id>ziroom</id>
-        	<url>http://mvn.ziroom.com/ams-release</url>
-     	</repository>-->
-     	<!--  
 		<repository>
 			<id>nexus-releases</id>
 			<name>Nexus Release Repository</name>
 			<url>http://112.126.64.113:6081/nexus/content/repositories/releases/</url>
 		</repository>
-	    <snapshotRepository>
-	    	<id>ziroom</id>
-	        <url>http://mvn.ziroom.com/ams-snapshot</url>
-		</snapshotRepository>
-     	-->
-		<!--  
 		<snapshotRepository>
 			<id>nexus-snapshots</id>
 			<name>Nexus Snapshot Repository</name>
 			<url>http://112.126.64.113:6081/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
-		-->
+	-->
 	
 	<!-- 集中定义版本号 -->
 	<properties>
@@ -101,16 +90,20 @@
 		<jdk.version>1.7</jdk.version>
 		
 		<!-- common项目jar包版本 -->
+		<omnipotent-api.version>0.0.1-SNAPSHOT</omnipotent-api.version>
 		<omnipotent-common-config.version>0.0.1-SNAPSHOT</omnipotent-common-config.version>
 		<omnipotent-common-utils.version>0.0.1-SNAPSHOT</omnipotent-common-utils.version>
-		
-		<!-- core、dao、serivce項目jar包版本 -->
-		<blej-core.version>0.0.1-SNAPSHOT</blej-core.version>
+		<omnipotent-core.version>0.0.1-SNAPSHOT</omnipotent-core.version>
+		<omnipotent-facade-provider.version>0.0.1-SNAPSHOT</omnipotent-facade-provider.version>
+		<omnipotent-service-provider.version>0.0.1-SNAPSHOT</omnipotent-service-provider.version>
+		<omnipotent-web.version>0.0.1-SNAPSHOT</omnipotent-web.version>
 		
 		<current.version>0.0.1-SNAPSHOT</current.version>
 		
+		<cat-client.version>1.3.7-RELEASE</cat-client.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<dubbo.version>2.5.3</dubbo.version>
+		<druid.version>1.0.10</druid.version>
 		<fastjson.version>1.2.12</fastjson.version>
 		<json.version>2.4</json.version>
 		<jackson.version>1.9.13</jackson.version>
@@ -123,6 +116,7 @@
 		<quartz.version>1.8.6</quartz.version>
 		<redis.client.version>2.4.2</redis.client.version>
 		<servlet.version>3.1.0</servlet.version>
+		<solr.version>4.7.2</solr.version>
 		<spring.vervion>4.2.1.RELEASE</spring.vervion>
 	</properties>
 	
@@ -149,6 +143,18 @@
 				<version>5.8.0</version>
 			</dependency>
 			<!-- activemq end -->
+			<!-- CAT接入 start -->
+			<dependency>
+		        <groupId>com.dianping.cat</groupId>
+		        <artifactId>cat-client</artifactId>
+		        <version>${cat-client.version}</version>
+		    </dependency>
+			<!-- CAT接入 end -->
+			<dependency>
+				<groupId>cglib</groupId>
+				<artifactId>cglib</artifactId>
+				<version>2.2.2</version>
+			</dependency>
 			<!-- apache commons start -->
 			<dependency>
 				<groupId>commons-beanutils</groupId>
@@ -254,7 +260,7 @@
 	    	<dependency>
 			    <groupId>com.alibaba</groupId>
 			    <artifactId>druid</artifactId>
-			    <version>1.0.10</version>
+			    <version>${druid.version}</version>
 			</dependency>
 			<!-- druid数据库连接池 end -->
 			<!-- dom4j start -->
@@ -269,6 +275,12 @@
 				<groupId>com.alibaba</groupId>
 				<artifactId>dubbo</artifactId>
 				<version>${dubbo.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<!-- Dubbo end -->
 			<!-- Json start -->
@@ -323,6 +335,13 @@
 				<version>${jackson.version}</version>
 			</dependency>
 			<!-- Json end -->
+			<!-- javaee start -->
+			<dependency>
+			    <groupId>javax</groupId>
+			    <artifactId>javaee-api</artifactId>
+			    <version>7.0</version>
+			</dependency>
+			<!-- javaee end -->
 			<!-- jstl start -->
 			<dependency>
 				<groupId>javax.servlet</groupId>
@@ -392,6 +411,11 @@
 				<version>${mysql.version}</version>
 			</dependency>
 			<!-- Mysql数据库驱动 end -->
+			<dependency>
+				<groupId>org.jboss.netty</groupId>
+				<artifactId>netty</artifactId>
+				<version>3.2.5.Final</version>
+			</dependency>
 			<!-- 汉字和拼音转换工具包 start -->
 			<dependency>
 			    <groupId>com.belerweb</groupId>
@@ -421,6 +445,11 @@
 			</dependency>
 			<!-- servlet end -->
 			<!-- solr-client start -->
+			<dependency>
+				<groupId>org.apache.solr</groupId>
+				<artifactId>solr-solrj</artifactId>
+				<version>${solr.version}</version>
+			</dependency>
 			<!-- solr-client end -->
 			<!-- Spring框架相关 start -->
 			<dependency>

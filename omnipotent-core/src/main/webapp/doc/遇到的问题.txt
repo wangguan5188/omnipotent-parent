@@ -1,0 +1,24 @@
+自己动手搭建基于dubbo的分布式架构-遇到的主要问题及反思（2016-8-13 22:22:44）
+----------------------------------------------------------------------------------------------------
+
+一定要加上<exclusions>，不然会有版本问题！
+<dependency>
+	<groupId>com.alibaba</groupId>
+	<artifactId>dubbo</artifactId>
+	<version>${dubbo.version}</version>
+	<exclusions>
+		<exclusion>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring</artifactId>
+		</exclusion>
+	</exclusions>
+</dependency>
+
+----------------------------------------------------------------------------------------------------
+
+最后遇到的一个问题： Dubbo client can not supported string message
+解决办法：http://blog.csdn.net/mingtianhaiyouwo/article/details/51200859
+
+注意：Dubbo报以上错误是因为dubbo传的数据对象没有序列化，序列化后就没事了。需要重启服务（包括provider和consumer）
+
+----------------------------------------------------------------------------------------------------
