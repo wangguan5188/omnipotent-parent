@@ -602,8 +602,11 @@
 	
 	<!-- 子模块 -->
 	<modules>
-		<module>omnipotent-common-utils</module>
-		<module>omnipotent-common-config</module>
+		<module>omnipotent-api</module>
+		<module>omnipotent-common-parent</module>
+		<module>omnipotent-core</module>
+		<module>omnipotent-facade-provider</module>
+		<module>omnipotent-service-provider</module>
 		<module>omnipotent-web</module>
 	</modules>
 	

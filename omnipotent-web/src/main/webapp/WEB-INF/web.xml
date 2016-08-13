@@ -55,21 +55,29 @@
 
 	<!-- 自定义权限检查过滤器 -->
 	<filter>
+		<!-- Filter的名字，相当于指定@WebFilter的filterName属性 -->
 		<filter-name>PermissionFilter</filter-name>
+		<!-- Filter的实现类 -->
 		<filter-class>com.omnipotent.filter.PermissionFilter</filter-class>
+		<!-- 下面的init-param元素配置了一个参数 -->
 		<init-param>
 			<param-name>filterURL</param-name>
 			<param-value>/test.do</param-value>
 		</init-param>
 	</filter>
+	<!-- 定义Filter拦截的URL地址 -->
 	<filter-mapping>
+		<!-- Filter的名字，与上面配置的必须一致 -->
 		<filter-name>PermissionFilter</filter-name>
+		<!-- Filter负责拦截的URL，相当于指定@WebFilter的urlPatterns属性 -->
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
 	<!-- springMVC模块 -->
 	<servlet>
+		<!-- 指定Servlet的名字，相当于指定@WebServlet的name属性 -->
 		<servlet-name>dispatcher</servlet-name>
+  		<!-- 指定Servlet的实现类，类名要包含包名，并注意大小写 -->
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
@@ -78,7 +86,9 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>
+  		<!-- 指定Servlet的名字，与上面配置的必须一致 -->
 		<servlet-name>dispatcher</servlet-name>
+  		<!-- 指定Servlet映射的URL地址，相当于指定@WebServlet的urlPatterns属性-->
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 	
