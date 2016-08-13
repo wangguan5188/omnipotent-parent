@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+  	<modelVersion>4.0.0</modelVersion>
+  	
+  	<parent>
+	    <groupId>com.omnipotent</groupId>
+	    <artifactId>omnipotent-parent</artifactId>
+	    <version>0.0.1-SNAPSHOT</version>
+  	</parent>
+  	
+  	<artifactId>omnipotent-api</artifactId>
+  	<packaging>war</packaging>
+  	<name>omnipotent-api</name>
+  	<description>核心api接口</description>
+  	
+  	<dependencies>
+		<!-- 引入公用的工具类模块 start -->
+		<dependency>
+			<groupId>com.omnipotent</groupId>
+			<artifactId>omnipotent-common-utils</artifactId>
+			<version>${omnipotent-common-utils.version}</version>
+		</dependency>
+		<!-- 引入公用的工具类模块 end -->
+		<!-- 引入公用的配置文件模块 start -->
+		<dependency>
+			<groupId>com.omnipotent</groupId>
+			<artifactId>omnipotent-common-config</artifactId>
+			<version>${omnipotent-common-config.version}</version>
+		</dependency>
+		<!-- 引入公用的配置文件模块 end -->
+		
+  		<!-- 其他jar包 start -->
+  		
+  		<!-- 其他jar包 end -->
+  	</dependencies>
+  	
+  	<build>
+    	<plugins>
+	      	<plugin>
+	        	<artifactId>maven-compiler-plugin</artifactId>
+	        	<configuration>
+	          		<source>1.8</source>
+	          		<target>1.8</target>
+	        	</configuration>
+	      	</plugin>
+	      	<plugin>
+	      		<artifactId>maven-war-plugin</artifactId>
+	      		<configuration>
+	      			<version>3.1</version>
+	      		</configuration>
+	      	</plugin>
+	    </plugins>
+  	</build>
+  	
+</project>
