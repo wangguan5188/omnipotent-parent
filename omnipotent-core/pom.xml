@@ -14,6 +14,13 @@
   	<name>omnipotent-core</name>
   	
   	<dependencies>
+		<!-- 引入公用的配置文件模块 start -->
+		<dependency>
+			<groupId>com.omnipotent</groupId>
+			<artifactId>omnipotent-common-config</artifactId>
+			<version>${omnipotent-common-config.version}</version>
+		</dependency>
+		<!-- 引入公用的配置文件模块 end -->
 		<!-- 引入公用的工具类模块 start -->
 		<dependency>
 			<groupId>com.omnipotent</groupId>

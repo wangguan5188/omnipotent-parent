@@ -38,16 +38,13 @@
     <context:spring-configured />
 	-->
 	
-	<!-- 采用注释的方式配置bean -->
-	<context:annotation-config />
-    
     <!-- 开启注解自动扫描 -->
  	<context:component-scan base-package="com.omnipotent">
 	  	<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
 	
 	<!-- 引入属性文件 -->
-	<context:property-placeholder location="classpath*:db.properties" />
+	<context:property-placeholder location="classpath*:db.properties,classpath*:dubbo.properties" />
 	
 	<!-- proxy-target-class默认"false",更改为"ture"使用CGLib动态代理 -->
 	<aop:aspectj-autoproxy proxy-target-class="true" />
